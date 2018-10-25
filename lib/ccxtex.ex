@@ -294,7 +294,7 @@ defmodule Ccxtex do
           |> DateTime.from_naive!("Etc/UTC")
           |> DateTime.to_unix(:millisecond)
         end
-  
+        
       opts =
         opts
         |> Map.from_struct()
