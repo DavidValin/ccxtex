@@ -254,6 +254,64 @@ defmodule Ccxtex do
     end
   end
 
+
+  @doc """
+  Fetches all or some trades for a given symbol on a given exchange
+
+  Usage:
+  ```
+  exchange = "poloniex"
+  ticker = fetch_trades(exchange, symbol)
+  ```
+
+  Return value example:
+  ```
+  [
+  ...
+  %Ccxtex.Trade{
+  {
+        info:       { ... },                  # the original decoded JSON as is
+        id:        '12345-67890:09876/54321', # string trade id
+        timestamp:  1502962946216,            # Unix timestamp in milliseconds
+        datetime:  '2017-08-17 12:42:48.000', # ISO8601 datetime with milliseconds
+        symbol:    'ETH/BTC',                 # symbol
+        order:     '12345-67890:09876/54321', # string order id or undefined/None/null
+        type:      'limit',                   # order type, 'market', 'limit' or undefined/None/null
+        side:      'buy',                     # direction of the trade, 'buy' or 'sell'
+        price:      0.06917684,               # float price in quote currency
+        amount:     1.5,                      # amount of base currency
+    },
+  }
+  ...
+  ]
+  ```
+  """
+  @spec fetch_trades(Trades.Opts.t()) :: result_tuple
+  def fetch_trades(%Ccxtex.Trades.Opts{} = opts) do
+      since_unix =
+        if opts.since do
+          opts.since
+          |> DateTime.from_naive!("Etc/UTC")
+          |> DateTime.to_unix(:millisecond)
+        end
+  
+      opts =
+        opts
+        |> Map.from_struct()
+        |> Map.put(:since, since_unix)
+  
+      with {:ok, trades} <- call_js_main(:fetchTrades, [opts]) do
+        trades =
+        trades
+          |> Utils.parse_trades()
+          |> Enum.map(&Trade.make!/1)
+  
+        {:ok, trades}
+      else
+        err_tup -> err_tup
+      end
+    end
+
   @doc """
   Fetches markets for a given exchange
 
