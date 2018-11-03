@@ -12,6 +12,8 @@ defmodule Ccxtex.Utils do
     end
   end
 
+ 
+
   defp parse_float(term) when is_binary(term) do
     {float, _} = Float.parse(term)
     float
