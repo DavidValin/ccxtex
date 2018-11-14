@@ -24,6 +24,11 @@ async function fetchTickers(exchange, symbols, params) {
   return await _exchange.fetchTickers(symbols, params)
 }
 
+async function fetchTrades(exchange, symbols, since, limit, params) {
+  const _exchange = new ccxt[exchange]()
+  return await _exchange.fetchTrades(symbols, since, limit, params)
+}
+
 async function fetchMarkets(exchange) {
   const _exchange = new ccxt[exchange]()
   return await _exchange.fetchMarkets()
